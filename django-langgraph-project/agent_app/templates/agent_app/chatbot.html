@@ -1,0 +1,103 @@
+{% extends "agent_app/base.html" %}
+
+{% block title %}Assistente{% endblock %}
+
+{% block styles %}
+<style>
+  :root{
+    --bg-dark:#000020; --bg-1:#171a4a; --bg-2:#2f2c79;
+    --red-1:#bd0003; --red-2:#ff0000; --text:#f2f2f7;
+  }
+  body{background:var(--bg-dark); color:var(--text);}
+  .chat-wrapper{max-width:900px; margin:3rem auto;}
+  .card{background:var(--bg-1); border:1px solid rgba(255,255,255,.06);}
+  .message{line-height:1.5}
+  .message.me{background:rgba(255,0,0,.06)}
+  .message.bot{background:rgba(189,0,3,.20)}
+  .message .badge-role{background:var(--red-1)}
+  .input-group .form-control{
+    background:var(--bg-2); color:#fff;
+    border:1px solid rgba(255,0,0,.35);
+  }
+  .input-group .form-control::placeholder{color:#cfd0ff}
+  .btn-ask{
+    background:linear-gradient(90deg,var(--red-1),var(--red-2));
+    border:none;
+  }
+  .btn-ask:hover{filter:brightness(1.1)}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-wrapper">
+  <h1 class="mb-3">Assistente</h1>
+
+  <div class="card shadow-lg rounded-3 mb-4">
+    <div class="card-body" id="chat-log" style="max-height:55vh; overflow:auto;">
+      {% for c in chats %}
+        <div class="mb-3 message me p-3 rounded">
+          <span class="badge badge-role mr-2">Você</span> {{ c.message }}
+        </div>
+        <div class="mb-4 message bot p-3 rounded">
+          <span class="badge badge-role mr-2">Bot</span> {{ c.response }}
+        </div>
+      {% empty %}
+        <p class="text-muted">Nenhuma conversa ainda. Faça sua primeira pergunta abaixo.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form id="chat-form" class="input-group">
+    {% csrf_token %}
+    <input name="message" type="text" class="form-control form-control-lg"
+           placeholder="Escreva sua pergunta..." autocomplete="off" required>
+    <div class="input-group-append">
+      <button class="btn btn-ask btn-lg px-4" type="submit">Perguntar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('chat-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const form = e.target;
+    const input = form.querySelector('[name="message"]');
+    const msg = input.value.trim();
+    if(!msg) return;
+
+    const log = document.getElementById('chat-log');
+    const you = document.createElement('div');
+    you.className = 'mb-3 message me p-3 rounded';
+    you.innerHTML = '<span class="badge badge-role mr-2">Você</span> ' + msg;
+    log.appendChild(you);
+    input.value = '';
+
+    const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try{
+      const resp = await fetch('', {
+        method:'POST',
+        headers:{
+          'X-Requested-With':'XMLHttpRequest',
+          'X-CSRFToken': csrf,
+          'Content-Type':'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({message: msg})
+      });
+      const data = await resp.json();
+      const bot = document.createElement('div');
+      bot.className = 'mb-4 message bot p-3 rounded';
+      bot.innerHTML = '<span class="badge badge-role mr-2">Bot</span> ' + (data.response || 'Erro ao responder');
+      log.appendChild(bot);
+      log.scrollTop = log.scrollHeight;
+    }catch(err){
+      const errDiv = document.createElement('div');
+      errDiv.className = 'mb-4 message bot p-3 rounded';
+      errDiv.textContent = 'Falha ao enviar: ' + err;
+      log.appendChild(errDiv);
+    }
+  });
+</script>
+{% endblock %}

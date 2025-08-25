@@ -1,0 +1,35 @@
+services:
+  web:
+    image: django-langgraph/web:dev
+    container_name: django-langgraph-web
+    build:
+      context: .
+      dockerfile: Dockerfile   # Dockerfile da RAIZ
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - faiss
+      - crawler
+    restart: unless-stopped
+
+  faiss:
+    image: django-langgraph/faiss:dev
+    container_name: django-langgraph-faiss
+    build:
+      context: ./FAISS
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+  crawler:
+    build:
+      context: ./CRAWLER
+      dockerfile: Dockerfile
+    environment:
+      - FAISS_URL=http://faiss:8000
+    depends_on:
+      - faiss
+    restart: unless-stopped

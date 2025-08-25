@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap 4.3 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    {% block styles %}
+    <style>
+      /* ---------- Paleta ---------- */
+      :root{
+        --bg:#000020;        /* fundo */
+        --bg2:#171a4a;       /* camada 2 */
+        --surface:#2f2c79;   /* cartões */
+        --accent:#bd0003;    /* primary */
+        --accent-2:#ff0000;  /* hover/active */
+      }
+
+      /* fundo geral */
+      body{
+        color:#f8f9fc;
+        background:
+          radial-gradient(1200px 800px at 100% -10%, var(--bg2), transparent 60%),
+          linear-gradient(180deg, var(--bg), #060616 60%);
+      }
+
+      /* container “cartão” padrão do app (não mexe no .card global) */
+      .app-card{
+        background: linear-gradient(180deg, rgba(47,44,121,.65), rgba(23,26,74,.75));
+        border:1px solid rgba(255,255,255,.08);
+        color:#f1f3f9;
+      }
+
+      /* --------- Bootstrap: só ajustamos o PRIMARY --------- */
+      .btn-primary{
+        background-color:var(--accent);
+        border-color:var(--accent);
+      }
+      .btn-primary:hover,
+      .btn-primary:focus{
+        background-color:var(--accent-2);
+        border-color:var(--accent-2);
+      }
+      .btn-outline-primary{
+        color:var(--accent-2);
+        border-color:var(--accent-2);
+      }
+      .btn-outline-primary:hover{
+        background-color:var(--accent-2);
+        border-color:var(--accent-2);
+        color:#fff;
+      }
+      .text-primary{ color:var(--accent-2)!important; }
+      .bg-primary{ background-color:var(--accent)!important; }
+      .border-primary{ border-color:var(--accent)!important; }
+      .alert-primary{
+        color:#fff; background-color:var(--accent); border-color:var(--accent);
+      }
+
+      /* foco de inputs mais visível e coerente com o vermelho */
+      .form-control:focus, .custom-select:focus{
+        border-color:var(--accent-2);
+        box-shadow:0 0 0 .2rem rgba(255,0,0,.35);
+      }
+    </style>
+    {% endblock %}
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

@@ -1,30 +1,29 @@
-[project]
+[tool.poetry]
 name = "agent_app"
 version = "0.1.0"
 description = "Projeto de chatbot para responder sobre educação no Distrito Federal"
-authors = [
-    {name = "ToledoSnows",email = "felipe.toledo.neves@gmail.com"}
-]
+authors = ["ToledoSnows <felipe.toledo.neves@gmail.com>"]
+package-mode = false
 
-requires-python = ">=3.12,<4.0"
-dependencies = [
-    "django (>=5.2.5,<6.0.0)",
-    "langgraph (>=0.6.4,<0.7.0)",
-    "langchain (>=0.3.27,<0.4.0)",
-    "langchain-openai (>=0.3.30,<0.4.0)",
-    "tavily-python (>=0.7.10,<0.8.0)",
-    "python-dotenv (>=1.1.1,<2.0.0)",
-    "langchain-community (>=0.3.27,<0.4.0)"
-]
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+django = ">=5.2.5,<6.0.0"
+langgraph = ">=0.6.4,<0.7.0"
+langchain = ">=0.3.27,<0.4.0"
+langchain-openai = ">=0.3.30,<0.4.0"
+tavily-python = ">=0.7.10,<0.8.0"
+python-dotenv = ">=1.1.1,<2.0.0"
+langchain-community = ">=0.3.27,<0.4.0"
+# faiss-cpu 1.12 não existe; use uma faixa realista:
+faiss-cpu = ">=1.8.0,<1.9.0"
+# Evite o pacote "google" (pode conflitar com o namespace google)
+# google = ">=3.0.0,<4.0.0"
+google-genai = ">=1.31.0,<2.0.0"
+google-generativeai = ">=0.8.5,<0.9.0"
 
-packages = [
-    { include = "agent_app" },
-    { include = "core" },
-    { include = "CRAWLER" },
-    { include = "FAISS" }
-]
-
+[tool.poetry.group.dev.dependencies]
+django-debug-toolbar = "^4.4.6"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"

@@ -25,7 +25,8 @@ SECRET_KEY = "django-insecure-iu)eqhiam3(l)ovh21vh#wpsk!ax!b+dvbuk++r_mw$+8-4*$-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "web"]  # 'web' é o nome do serviço no Docker; use "*" se preferir
+
 
 
 # Application definition
@@ -55,10 +56,11 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],  # procura o base.html aqui
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -66,6 +68,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = "core.wsgi.application"
 
