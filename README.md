@@ -1,9 +1,9 @@
 # Pergunta que Respondo
 
-| Versão do Documento: | 1.0 |
+| Versão do Documento: | 1.1 |
 | --- | --- |
-| **Data:** | 19 de agosto de 2025 |
-| **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />Guilherme Rocha Duarte (guilherme.r.duarte@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
+| **Data:** | 26 de agosto de 2025 |
+| **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
 | **Licença:** | GNU-3 (General Public License 3.0) |
 | **Repositório:** | <https://github.com/jrsmoura/pergunta-que-respondo> |
 
@@ -27,7 +27,7 @@ O "Pergunta que Respondo" é um assistente conversacional inteligente, desenvolv
 
 ## Arquitetura
 
-![Arquitetura do Sistema](images/architecture.png)
+![Arquitetura do Sistema](images/architecture-v2.png)
 
 O sistema é dividido em dois macro-componentes:
 
