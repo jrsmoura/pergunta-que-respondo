@@ -3,7 +3,7 @@
 | Versão do Documento: | 1.0 |
 | --- | --- |
 | **Data:** | 19 de agosto de 2025 |
-| **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />Guilherme Rocha Duarte (guilherme.r.duarte@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
+| **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
 | **Licença:** | GNU-3 (General Public License 3.0) |
 | **Repositório:** | <https://github.com/jrsmoura/pergunta-que-respondo> |
 
