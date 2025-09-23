@@ -1,0 +1,111 @@
+"""
+Módulo de engine RAG para o chatbot.
+
+Responsável por carregar o vetor FAISS e fornecer funções de recuperação de contexto.
+"""
+
+import sys, os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.cross_encoders.huggingface import HuggingFaceCrossEncoder
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+load_dotenv()
+
+# Embeddings locais (mesmo usados no crawler)
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+# Carregar índice FAISS salvo pelo crawler
+FAISS_DIR = os.path.join(BASE_DIR, "FAISS")
+try:
+    vector_store = FAISS.load_local(
+        FAISS_DIR, embeddings, allow_dangerous_deserialization=True
+    )
+except Exception:
+    vector_store = None
+
+# retriever básico
+base_retriever = vector_store.as_retriever(search_kwargs={"k": 10})
+
+# reranker cross-encoder
+hf_encoder = HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-MiniLM-L-6-v2")
+reranker = CrossEncoderReranker(model=hf_encoder, top_n=5)
+
+# retriever com reranking
+retriever = ContextualCompressionRetriever(
+    base_compressor=reranker,
+    base_retriever=base_retriever,
+)
+
+# LLM
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
+)
+
+# Prompt
+prompt_template = """Você é um assistente que responde perguntas sobre educação na região da RIDE-DF. Use o contexto fornecido para responder de forma precisa e concisa. Se a pergunta não estiver relacionada ao contexto, responda que não encontrou informações específicas sobre a pergunta. Não invente respostas.
+
+CONTEXTO:
+{contexto}
+
+PERGUNTA:
+{pergunta}
+
+RESPOSTA:
+"""
+prompt = ChatPromptTemplate.from_template(prompt_template)
+
+
+def answer_question(pergunta: str) -> dict:
+    """
+    Responde a uma pergunta utilizando um mecanismo RAG (Retrieval-Augmented Generation) e retorna uma resposta junto com fontes relevantes.
+
+    Args:
+        pergunta (str): Pergunta a ser respondida.
+
+    Returns:
+        dict: Um dicionário contendo:
+            - "resposta" (str): A resposta gerada para a pergunta.
+            - "fontes" (list): Lista de até 3 dicionários, cada um com:
+                - "fonte" (str): Nome ou origem da fonte do documento.
+                - "snippet" (str): Trecho do conteúdo do documento relevante para a resposta.
+
+    Notas:
+        - Se não forem encontrados documentos relevantes, retorna uma resposta padrão e uma lista de fontes vazia.
+    """
+    """Responde à pergunta e mostra docs relevantes"""
+    docs = retriever.invoke(pergunta)
+    contexto = [doc.page_content for doc in docs]
+
+    # Fallback se não encontrar nada útil
+    if not contexto or len(" ".join(contexto)) < 50:
+        return {
+            "resposta": f"Não encontrei notícias específicas sobre '{pergunta}', mas posso trazer informações gerais sobre educação no DF.",
+            "fontes": [],
+        }
+
+    rag_chain = prompt | llm | StrOutputParser()
+    resposta = rag_chain.invoke({"pergunta": pergunta, "contexto": contexto})
+
+    # Prepara snippets das fontes
+    fontes = []
+    for i, doc in enumerate(docs[:3]):  # só mostra top 3
+        meta = getattr(doc, "metadata", {})
+        fonte = meta.get("fonte") or meta.get("source") or "Fonte desconhecida"
+        snippet = doc.page_content[:200].replace("\n", " ") + "..."
+        fontes.append({"fonte": fonte, "snippet": snippet})
+
+    return {
+        "resposta": resposta,
+        "fontes": fontes,
+    }

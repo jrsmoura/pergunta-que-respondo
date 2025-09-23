@@ -1,8 +1,8 @@
 # Pergunta que Respondo
 
-| Versão do Documento: | 1.1 |
+| Versão do Documento: | 1.2 |
 | --- | --- |
-| **Data:** | 26 de agosto de 2025 |
+| **Data:** | 26 de agosto de 2025 (atualizado em 23 set 2025)|
 | **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
 | **Licença:** | GNU-3 (General Public License 3.0) |
 | **Repositório:** | <https://github.com/jrsmoura/pergunta-que-respondo> |
@@ -80,8 +80,8 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
 #### Pré-requisitos
 
 * **Git**
-* **Python 3.10+**
-* **Poetry** (versão 1.2 ou superior)
+* **Python < 3.12**
+* **Poetry**
 * **Docker** e **Docker Compose**
 
   
@@ -109,7 +109,21 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
    poetry install
    ```
 
-4. **Construir e Iniciar os Contêineres:** O Docker Compose irá construir as imagens e iniciar os serviços definidos no arquivo `docker-compose.yml`.
+4. **Execução (local):** 
+
+   - Rode o crawler para coletar notícias e atualizar o banco FAISS. Isso vai buscar novas notícias, salvar na pasta ```data/bronze``` e atualizar ```FAISS/```.
+
+      ```
+      poetry run python crawler/crawler_exec.py
+      ```
+
+   - Suba o servidor Django:
+
+      ```
+      poetry run python web/manage.py runserver
+      ```
+
+5. **Construir e Iniciar os Contêineres:** O Docker Compose irá construir as imagens e iniciar os serviços definidos no arquivo `docker-compose.yml`.
 
    ```
    docker-compose up --build

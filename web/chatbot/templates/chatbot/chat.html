@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pergunta que Respondo - Educação na RIDE-DF</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 0; }
+    #chat-container { max-width: 800px; margin: 30px auto; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .message { margin: 10px 0; padding: 12px; border-radius: 8px; }
+    .user { background: #0078d4; color: #fff; text-align: right; }
+    .bot { background: #e8f0fe; color: #000; }
+    .fontes { font-size: 0.85em; color: #444; margin-top: 5px; padding-left: 15px; }
+    #messages { max-height: 400px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 10px; }
+    #loading { display: none; font-style: italic; color: #555; margin-top: 10px; }
+    #controls { margin-top: 15px; display: flex; gap: 10px; }
+    input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    button { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    #send { background: #0078d4; color: white; }
+    #clear { background: #ccc; color: black; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h2>Pergunta que Respondo</h2>
+    <div id="messages"></div>
+    <p id="loading">💭 Processando sua pergunta...</p>
+    <div id="controls">
+      <input type="text" id="pergunta" placeholder="Digite sua pergunta...">
+      <button id="send">Enviar</button>
+      <button id="clear">Limpar</button>
+    </div>
+  </div>
+
+  <script>
+    const sendBtn = document.getElementById("send");
+    const clearBtn = document.getElementById("clear");
+    const perguntaInput = document.getElementById("pergunta");
+    const messagesDiv = document.getElementById("messages");
+    const loading = document.getElementById("loading");
+
+    function addMessage(text, sender="bot", fontes=[]) {
+      const div = document.createElement("div");
+      div.classList.add("message", sender);
+      div.innerHTML = text;
+
+      if (fontes.length > 0) {
+        const fontesDiv = document.createElement("div");
+        fontesDiv.classList.add("fontes");
+        fontesDiv.innerHTML = "<b>Fontes:</b><br>" + fontes.map(f => `- <i>${f.fonte}</i>: ${f.snippet}`).join("<br>");
+        div.appendChild(fontesDiv);
+      }
+
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const pergunta = perguntaInput.value.trim();
+      if (!pergunta) return;
+
+      addMessage(pergunta, "user");
+      perguntaInput.value = "";
+
+      loading.style.display = "block"; // mostra indicador
+
+      const response = await fetch("/chatbot/ask/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pergunta })
+      });
+
+      const data = await response.json();
+      loading.style.display = "none"; // esconde indicador
+
+      if (data.resposta) {
+        addMessage(data.resposta, "bot", data.fontes || []);
+      } else {
+        addMessage("❌ Erro ao obter resposta.", "bot");
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    perguntaInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+    clearBtn.addEventListener("click", () => {
+      messagesDiv.innerHTML = "";
+    });
+  </script>
+</body>
+</html>

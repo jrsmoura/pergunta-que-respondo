@@ -1,13 +1,18 @@
-.. Pergunta que Respondo documentation master file, created by
-   sphinx-quickstart on Tue Aug 26 15:59:21 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Bem-vindo à Documentação do Pergunta que Respondo!
+==================================================
 
-Bem-vindo a Documentação do Pergunta que Respondo!
-===================================
+Este projeto implementa um chatbot baseado em RAG (Retrieval-Augmented Generation),
+com coleta de notícias automatizada (crawler) e backend em Django.
+
+Conteúdo
+--------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Módulos
 
-   modules
+   build_faiss
+   crawler
+   manage
+   web
+   chatbot

@@ -1,13 +1,13 @@
-crawler\_exec package
-=====================
+chatbot.knowledge package
+=========================
 
 Submodules
 ----------
 
-crawler\_exec.crawler\_exec module
+chatbot.knowledge.knowledge module
 ----------------------------------
 
-.. automodule:: crawler_exec.crawler_exec
+.. automodule:: chatbot.knowledge.knowledge
    :members:
    :show-inheritance:
    :undoc-members:
@@ -15,7 +15,7 @@ crawler\_exec.crawler\_exec module
 Module contents
 ---------------
 
-.. automodule:: crawler_exec
+.. automodule:: chatbot.knowledge
    :members:
    :show-inheritance:
    :undoc-members:

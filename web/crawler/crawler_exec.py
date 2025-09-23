@@ -40,6 +40,15 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+
+FAISS_DATA_PATH = Path("FAISS")
+FAISS_DATA_PATH.mkdir(parents=True, exist_ok=True)
+
+# TESTE DE Embeddings locais (sem custo)
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
 # CONFIGURAÇÃO INICIAL
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -225,10 +234,37 @@ def executar_coleta(query: str):
                     "query_origem": query
                 }
                 salvar_artigo_em_json(artigo_completo)
+                atualizar_faiss(artigo_completo) # ATUALIZAÇÃO DO ÍNDICE FAISS
                 salvar_url_processada(url)
                 artigos_novos_count += 1
     
     logging.info(f"Processo finalizado. {artigos_novos_count} novos artigos foram coletados e salvos.")
+
+
+def atualizar_faiss(artigo: dict):
+    """
+    Atualiza o índice FAISS com o artigo recém-coletado.
+    Se já existir, adiciona; se não, cria um novo.
+    """
+    texto = f"{artigo['titulo']} - {artigo['texto']}"
+    
+    if (FAISS_DATA_PATH / "index.faiss").exists():
+        # Carregar índice existente
+        vector_store = FAISS.load_local(
+            str(FAISS_DATA_PATH), 
+            embeddings, 
+            allow_dangerous_deserialization=True
+        )
+        vector_store.add_texts([texto])
+        logging.info("🔄 Índice FAISS atualizado com nova notícia")
+    else:
+        # Criar índice do zero
+        vector_store = FAISS.from_texts([texto], embedding=embeddings)
+        logging.info("🆕 Índice FAISS criado do zero")
+    
+    vector_store.save_local(str(FAISS_DATA_PATH))
+    logging.info(f"💾 Índice FAISS salvo em {FAISS_DATA_PATH}")
+
 
 if __name__ == "__main__":
     # EXECUÇÃO PARA COLETA HISTÓRICA
