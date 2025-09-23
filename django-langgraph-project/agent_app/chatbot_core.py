@@ -1,5 +1,4 @@
-import os
-from typing import TypedDict, List
+from typing_extensions import TypedDict, List
 
 # langchain
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -9,23 +8,24 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, END
 
-from knowledge import create_dummies
+from .knowledge import create_dummies
+from core.settings import GOOGLE_API_KEY
 
-class GraphState(TypeDict):
+class GraphState(TypedDict):
     question: str
     documents: List[str]
     generetion: str
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="gemini-embedding-001",
-    google_api_key = os.getenv("GOOGLE_API_KEY")
+    model = "gemini-embedding-001",
+    google_api_key = GOOGLE_API_KEY
 )
 
 texts = create_dummies()
 
 vector_store = FAISS.from_text(
-    texts=texts
-    embedding =embeddings    
+    texts = texts,
+    embedding = embeddings    
 )
 
 retriever = vector_store.as_retriever()
@@ -36,10 +36,19 @@ llm = ChatGoogleGenerativeAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=GOOGLE_API_KEY
 )
 
-prompt_template = """Você é um assistente para responder perguntas sobre notícias de educação no Distrito Federal.
+
+def retrieve_context(state: GraphState):
+    pergunta = state["question"]
+    docs = retriever.invoke(pergunta)
+    format_context = [doc.page_content for doc in docs]
+    return {"contexto": format_context}
+
+
+def generate_response(state: GraphState):
+    prompt_template = """Você é um assistente para responder perguntas sobre notícias de educação no Distrito Federal.
 Use apenas o contexto fornecido para responder. Se a pergunta não estiver no contexto, diga "Apenas respondo sobre informações de notícias de educação no Distrito Federal."
 Seja direto e conciso.
 
@@ -51,20 +60,13 @@ PERGUNTA:
 
 RESPOSTA:
 """
-prompt = ChatPromptTemplate.from_template(prompt_template)
+    prompt = ChatPromptTemplate.from_template(prompt_template)
 
-def retrieve_context(state: AgentState):
-    pergunta = state["pergunta"]
-    docs = retriever.invoke(pergunta)
-    format_context = [doc.page_content for doc in docs]
-    return {"contexto": format_context}
-
-def generate_response(state: AgentState):
-    pergunta = state["pergunta"]
-    contexto = state["contexto"]
+    pergunta = state["question"]
+    contexto = state["documents"]
     rag_chain = prompt | llm | StrOutputParser()
-    resposta = rag_chain.invoke({"pergunta": pergunta, "contexto": contexto})
-    return {"resposta": resposta}
+    resposta = rag_chain.invoke({"question": pergunta, "documents": contexto})
+    return {"generation": resposta}
 
 def build_graph():
     workflow = StateGraph(GraphState)
