@@ -1,167 +1,376 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="UTF-8">
   <title>Pergunta que Respondo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap 4.3 -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- Material Symbols Rounded -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
 
   <style>
-    /* ---------- Paleta ---------- */
-    :root{
-      --bg:#000020;        /* fundo */
-      --bg2:#171a4a;       /* camada 2 */
-      --surface:#2f2c79;   /* cartões */
-      --accent:#bd0003;    /* primary */
-      --accent-2:#ff0000;  /* hover/active */
-      --text:#f8f9fc;
+    :root {
+      --bg: #f4f6f8;
+      --surface: #fff;
+      --surface-2: #fafafa;
+      --text: #000;
+      --border: #ddd;
+      --primary: #0083f9;
+      --secondary: #e8e9eb;
+      --secondary-text: #000;
     }
-
-    body{
-      color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 100% -10%, var(--bg2), transparent 60%),
-        linear-gradient(180deg, var(--bg), #060616 60%);
+    body.dark {
+      --bg: #1d1d20;
+      --surface: #2e2e32;
+      --surface-2: #2e2e32;
+      --text: #f2f2f7;
+      --border: rgba(255,255,255,0.1);
+      --primary: #0083f9;
+      --secondary: #3f3f3f;
+      --secondary-text: #fff;
     }
-
-    .chat-wrapper{max-width:900px; margin:3rem auto;}
-    .card{
-      background: linear-gradient(180deg, rgba(47,44,121,.65), rgba(23,26,74,.75));
-      border:1px solid rgba(255,255,255,.08);
-      color:#f1f3f9;
-    }
-
-    .message{line-height:1.5}
-    .message.me{background:rgba(255,0,0,.06)}
-    .message.bot{background:rgba(189,0,3,.20)}
-    .message .badge-role{background:var(--accent)}
-
-    .input-group .form-control{
-      background:var(--surface); color:#fff;
-      border:1px solid rgba(255,0,0,.35);
-    }
-    .input-group .form-control::placeholder{color:#cfd0ff}
-    .btn-ask{
-      background:linear-gradient(90deg,var(--accent),var(--accent-2));
-      border:none; color:#fff;
-    }
-    .btn-ask:hover{filter:brightness(1.1)}
-
-    /* Fontes extras */
-    .message .fontes {
-      font-size: 0.85em;
-      color: #cfd0ff;
-      margin-top: 6px;
-    }
-    .message .fontes ul {
-      margin: 5px 0 0 15px;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
       padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--text);
     }
-    .message .fontes li { margin-bottom: 4px; }
-
-    #loading {
-      display: none;
-      font-style: italic;
-      color: #ccc;
+    #chat-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      animation: fadeInScale 0.4s ease;
+    }
+    h2 {
+      margin: 0 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      background: var(--surface-2);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    #placeholder {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
       text-align: center;
-      margin: 10px 0;
+      color: var(--border);
+      opacity: 0.7;
+      pointer-events: none;
     }
+    #placeholder .material-symbols-rounded {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    #placeholder p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .message {
+      max-width: 70%;
+      margin: 6px 0;
+      padding: 8px 12px;
+      border-radius: 16px;
+      line-height: 1.4;
+      font-size: 0.95rem;
+      animation: fadeInUp 0.25s ease;
+    }
+    .user {
+      background: var(--primary);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .bot {
+      background: #e8e8ea;
+      color: #000;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    body.dark .bot {
+      background: #333333;
+      color: var(--text);
+    }
+
+    #controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    input[type=text] {
+      flex: 1;
+      padding: 12px;
+      border-radius: 100px;
+      border: 1px solid #ccc;
+      background: var(--surface);
+      color: var(--text);
+    }
+    body.dark input[type=text] {
+      border: 1px solid #555;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      background: var(--secondary);
+      color: var(--secondary-text);
+    }
+    button:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    #send { background: var(--primary); color: white; }
+    #clear { background: var(--secondary); color: var(--secondary-text); }
+
+    @keyframes fadeInUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+    @keyframes fadeInScale{from{opacity:0; transform:scale(.95);} to{opacity:1; transform:scale(1);}}
+    @keyframes fadeOutDown{from{opacity:1; transform:translateY(0) scale(1);} to{opacity:0; transform:translateY(20px) scale(.9);} }
+    .message.removing{animation:fadeOutDown .3s ease forwards;}
+    @keyframes blink{0%,80%,100%{opacity:.2;} 40%{opacity:1;}}
+
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      transition:opacity .25s ease;
+      z-index: 1000;
+    }
+    #modal-overlay.visible{opacity:1; pointer-events:auto;}
+    #modal {
+      background: #fafafb;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 20px;
+      width: 360px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      animation: fadeInScale 0.3s ease;
+    }
+    body.dark #modal {
+      background: #2f2f2f;
+      color: #f2f2f7;
+    }
+    #modal-header { display: flex; justify-content: flex-end; }
+    #close-modal {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--text);
+    }
+    #modal-content { text-align: center; }
+    .about-logo { width: 110px; height: 110px; margin-bottom: 5px; }
+    #modal-content h3 {margin: 10px 0 4px;}
+    #modal-content p.desc{font-size:.9rem; margin:6px 0 12px;}
+    .version{display:inline-block; padding:4px 10px; border-radius:12px; background:#d5e7e4; color:#00785f; font-weight:700; font-size:.85rem; margin-bottom:24px;}
+    .modal-links{display:flex; flex-direction:column; gap:10px; margin-bottom:12px;}
+    .modal-links a{
+      width:86%; margin:0 auto; background:#fff; color:#333338; text-decoration:none;
+      padding:12px 14px; border-radius:12px; display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+    }
+    body.dark .modal-links a { background:#3f3f3f; color:#f2f2f7; }
+    .modal-links a .material-symbols-rounded{font-size:18px; color:#333338;}
+    body.dark .modal-links a .material-symbols-rounded{color:#f2f2f7;}
+    #modal-footer { font-size: 0.8rem; color: gray; margin-top: 24px; }
   </style>
 </head>
 <body>
-  <div class="chat-wrapper">
-    <h1 class="mb-3">Pergunta que Respondo</h1>
-
-    <div class="card shadow-lg rounded-3 mb-4">
-      <div class="card-body" id="chat-log" style="max-height:55vh; overflow:auto;">
-        <p class="text-muted">Faça sua primeira pergunta abaixo.</p>
+  <div id="chat-container">
+    <h2>
+      Pergunta que Respondo
+      <div style="display:flex; gap:8px;">
+        <button id="about-btn" title="Sobre"><span class="material-symbols-rounded">info</span></button>
+        <button id="toggle-theme" title="Alternar tema"><span class="material-symbols-rounded">dark_mode</span></button>
+      </div>
+    </h2>
+    <div id="messages">
+      <div id="placeholder">
+        <span class="material-symbols-rounded">chat</span>
+        <p>Faça a sua pergunta!</p>
       </div>
     </div>
-
-    <p id="loading">💭 Processando sua pergunta...</p>
-
-    <form id="chat-form" class="input-group">
-      <input name="message" type="text" id="pergunta"
-             class="form-control form-control-lg"
-             placeholder="Digite sua pergunta..." autocomplete="off" required>
-      <div class="input-group-append">
-        <button class="btn btn-ask btn-lg px-4" type="submit">Perguntar</button>
-      </div>
-      <div class="input-group-append">
-        <button class="btn btn-secondary btn-lg px-4" type="button" id="clear">Limpar</button>
-      </div>
-    </form>
+    <div id="controls">
+      <input type="text" id="pergunta" placeholder="Digite sua pergunta...">
+      <button id="send" title="Enviar mensagem"><span class="material-symbols-rounded">send</span></button>
+      <button id="clear" title="Limpar histórico"><span class="material-symbols-rounded">close</span></button>
+    </div>
   </div>
 
-  <!-- Dependências -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <div id="modal-overlay">
+    <div id="modal">
+      <div id="modal-header">
+        <button id="close-modal" aria-label="Fechar"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div id="modal-content">
+        <img src="https://raw.githubusercontent.com/jobsrobson/Public-Databases/refs/heads/main/pqr.svg" alt="Logo Pergunta que Respondo" class="about-logo">
+        <h3>Pergunta que Respondo</h3>
+        <p class="desc">
+          Chatbot feito pelos alunos do 8° Semestre do curso de Ciência de Dados e IA do IESB, criado para responder as suas dúvidas sobre a educação na RIDE-DF.
+          Ele faz parte do projeto <a href="https://dataiesb.com" target="_blank">DataIESB</a>.
+        </p>
+        <div class="version">0.3</div>
+        <div class="modal-links">
+          <a href="https://github.com/jrsmoura/pergunta-que-respondo" target="_blank" rel="noopener">
+            GitHub <span class="material-symbols-rounded">arrow_forward_ios</span>
+          </a>
+          <a href="https://github.com/jrsmoura/pergunta-que-respondo/issues" target="_blank" rel="noopener">
+            Issues <span class="material-symbols-rounded">arrow_forward_ios</span>
+          </a>
+        </div>
+        <div id="modal-footer">Gustavo, Felipe, Robson e Victor – 2025</div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
   <script>
-    const log = document.getElementById('chat-log');
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('pergunta');
-    const loading = document.getElementById('loading');
-    const clearBtn = document.getElementById('clear');
+    const messagesDiv = document.getElementById("messages");
+    const perguntaInput = document.getElementById("pergunta");
+    const sendBtn = document.getElementById("send");
+    const clearBtn = document.getElementById("clear");
+    const toggleBtn = document.getElementById("toggle-theme");
+    const aboutBtn = document.getElementById("about-btn");
+    const modalOverlay = document.getElementById("modal-overlay");
+    const closeModal = document.getElementById("close-modal");
 
-    function appendMessage(role, text, fontes=[]) {
-      const div = document.createElement('div');
-      div.className = `mb-3 message ${role} p-3 rounded`;
-      const roleLabel = role === 'me' ? 'Você' : 'Bot';
-      div.innerHTML = `<span class="badge badge-role mr-2">${roleLabel}</span> ${marked.parse(text)}`;
-
-      if (role === 'bot' && Array.isArray(fontes) && fontes.length > 0) {
-        const fontesDiv = document.createElement("div");
-        fontesDiv.classList.add("fontes");
-        let html = "<b>Fontes:</b><ul>";
-        for (const f of fontes) {
-          html += `<li><i>${f.fonte}</i>: ${f.snippet}</li>`;
-        }
-        html += "</ul>";
-        fontesDiv.innerHTML = html;
-        div.appendChild(fontesDiv);
-      }
-
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+    function scrollToBottom() {
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    function showPlaceholder() {
+      messagesDiv.innerHTML = `
+        <div id="placeholder">
+          <span class="material-symbols-rounded">chat</span>
+          <p>Faça a sua pergunta!</p>
+        </div>
+      `;
+    }
+    function addMessage(text, sender="bot") {
+      const placeholder = document.getElementById("placeholder");
+      if (placeholder) placeholder.style.display = "none";
+      const div = document.createElement("div");
+      div.classList.add("message", sender);
+      div.innerHTML = marked.parse(text);
+      messagesDiv.appendChild(div);
+      scrollToBottom();
     }
 
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-      const msg = input.value.trim();
-      if(!msg) return;
-      appendMessage('me', msg);
-      input.value = '';
+    // Função para pegar CSRF do cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + "=")) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
 
-      loading.style.display = 'block';
+    // Envio para o backend com CSRF
+    sendBtn.addEventListener("click", async () => {
+      const msg = perguntaInput.value.trim();
+      if (!msg) return;
+      addMessage(msg, "user");
+      perguntaInput.value = "";
 
-      try{
-        const resp = await fetch('/ask/', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+      try {
+        const resp = await fetch("/ask/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+          },
           body: JSON.stringify({ pergunta: msg })
         });
 
         const data = await resp.json();
-        loading.style.display = 'none';
+
         if (data.resposta) {
-          appendMessage('bot', data.resposta, data.fontes || []);
+          addMessage(data.resposta, "bot");
         } else {
-          appendMessage('bot', '❌ Erro ao obter resposta.');
+          addMessage("❌ Erro: resposta inválida do servidor.", "bot");
         }
-      }catch(err){
-        loading.style.display = 'none';
-        appendMessage('bot', '❌ Falha: ' + err);
+      } catch (err) {
+        addMessage("❌ Erro de conexão com o servidor.", "bot");
       }
     });
 
-    clearBtn.addEventListener("click", () => {
-      log.innerHTML = "";
+    perguntaInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendBtn.click();
+      }
     });
+    clearBtn.addEventListener("click", () => {
+      const msgs = messagesDiv.querySelectorAll(".message");
+      if (msgs.length === 0) {
+        showPlaceholder();
+        return;
+      }
+      msgs.forEach((m, i) => {
+        setTimeout(() => m.classList.add("removing"), i * 50);
+      });
+      setTimeout(() => { showPlaceholder(); }, msgs.length * 50 + 400);
+    });
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      if (document.body.classList.contains("dark")) {
+        toggleBtn.innerHTML = '<span class="material-symbols-rounded">light_mode</span>';
+      } else {
+        toggleBtn.innerHTML = '<span class="material-symbols-rounded">dark_mode</span>';
+      }
+    });
+
+    // Modal
+    aboutBtn.addEventListener("click", () => { modalOverlay.style.display = "flex"; });
+    closeModal.addEventListener("click", () => { modalOverlay.style.display = "none"; });
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) modalOverlay.style.display = "none";
+    });
+
+    // Foco automático
+    window.onload = () => { perguntaInput.focus(); };
   </script>
 </body>
 </html>
