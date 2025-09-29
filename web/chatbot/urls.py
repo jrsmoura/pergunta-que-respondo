@@ -17,6 +17,6 @@ from django.urls import path
 from .views import ask, chat_interface
 
 urlpatterns = [
-    path("ask/", ask, name="ask"),                  # API JSON
-    path("interface/", chat_interface, name="chat") # Interface Web
+    path("ask/", ask, name="ask"),     # API JSON em /ask/
+    path("", chat_interface, name="chat"),  # interface web direto na raiz
 ]

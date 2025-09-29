@@ -1,0 +1,53 @@
+                         COMANDOS DE TERMINAL - PQR
+
+============================================================================
+
+PROJETO REQUER PYTHON 3.12
+
+No Linux, usar PyEnv para baixar o Python 3.12:
+pyenv install 3.12.6
+
+============================================================================
+
+RODAR LOCALMENTE (SEM DOCKER)
+No Terminal, com kernel 3.12.6 habilitado e dentro da
+pasta raiz do projeto:
+
+$ poetry install
+$ poetry run python web/manage.py runserver
+
+============================================================================
+
+REBUILD DO POETRY LOCK
+$ rm poetry.lock
+$ poetry lock
+
+============================================================================
+
+REBUILD DA DOCUMENTAÇÃO SPHINX
+$ cd docs
+$ sphinx-build -b html docs/source docs/_build/html
+
+============================================================================
+
+REBUILD IMAGEM DOCKER
+$ docker build -t pergunta-que-respondo:cpu .
+
+============================================================================
+
+EXECUTAR A PARTIR DA IMAGEM DOCKER
+$ docker run -it --rm -p 8000:8000 pergunta-que-respondo:cpu
+
+============================================================================
+
+SUBIR IMAGEM PARA DOCKERHUB
+$ docker login
+$ docker tag pergunta-que-respondo:cpu jobsrobson/pergunta-que-respondo:cpu
+$ docker push jobsrobson/pergunta-que-respondo:cpu
+
+============================================================================
+
+BAIXAR A IMAGEM A PARTIR DO DOCKERHUB
+$ docker pull jobsrobson/pergunta-que-respondo:cpu
+
+============================================================================

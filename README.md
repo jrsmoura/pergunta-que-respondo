@@ -1,8 +1,8 @@
 # Pergunta que Respondo
 
-| Versão do Documento: | 1.2 |
+| Versão do Documento: | 1.3 |
 | --- | --- |
-| **Data:** | 26 de agosto de 2025 (atualizado em 23 set 2025)|
+| **Data:** | 26 de agosto de 2025 (atualizado em 29 set 2025)|
 | **Autores:** | Felipe Toledo Neves (felipe.neves@iesb.edu.br)<br />​Gustavo Henrique Vicente Torres (gustavo.h.torres@iesb.edu.br) <br />Robson Ricardo Leite da Silva (robson.r.silva@iesb.edu.br) <br />​Victor Kauan Moreno de Brito (victor.brito@iesb.edu.br) |
 | **Licença:** | GNU-3 (General Public License 3.0) |
 | **Repositório:** | <https://github.com/jrsmoura/pergunta-que-respondo> |
@@ -80,7 +80,7 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
 #### Pré-requisitos
 
 * **Git**
-* **Python < 3.12**
+* **Python = 3.12**
 * **Poetry**
 * **Docker** e **Docker Compose**
 
@@ -123,13 +123,17 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
       poetry run python web/manage.py runserver
       ```
 
-5. **Construir e Iniciar os Contêineres:** O Docker Compose irá construir as imagens e iniciar os serviços definidos no arquivo `docker-compose.yml`.
+5. **Construir e Iniciar o Container:** O Docker Compose irá construir as imagens e iniciar os serviços definidos no arquivo `Dockerfile`.
 
    ```
-   docker-compose up --build
+   docker build -t pergunta-que-respondo:cpu .
    ```
 
-   A aplicação estará disponível em <http://localhost:8000> (ou na porta configurada no `docker-compose.yml`).
+   Inicie o container criado:
+
+   ```
+   docker run -p 8000:8000 pergunta-que-respondo:cpu
+   ```
 
    
 

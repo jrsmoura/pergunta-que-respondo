@@ -1,26 +1,47 @@
-"""
-Views para o aplicativo chatbot.
-"""
-
+import json
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .rag_engine import answer_question
 from django.shortcuts import render
 
+@csrf_exempt
 def ask(request):
     """
-    Lida com requisições GET para responder à pergunta de um usuário.
-    Args:
-        request (HttpRequest): O objeto de requisição HTTP contendo os parâmetros de consulta.
-    Returns:
-        JsonResponse: Uma resposta JSON contendo a pergunta original e sua resposta,
-                      ou uma mensagem de erro se o parâmetro 'q' estiver ausente.
+    Lida com requisições POST (JSON) e GET para responder à pergunta de um usuário.
+    Sempre retorna 'resposta' como string.
     """
-    pergunta = request.GET.get("q", "")
-    if not pergunta:
-        return JsonResponse({"erro": "Informe a pergunta usando o parâmetro ?q="}, status=400)
-    
-    resposta = answer_question(pergunta)
-    return JsonResponse({"pergunta": pergunta, "resposta": resposta})
+    if request.method == "POST":
+        try:
+            if request.content_type == "application/json":
+                data = json.loads(request.body)
+                pergunta = data.get("pergunta", "")
+            else:
+                pergunta = request.POST.get("pergunta", "")
+
+            if not pergunta:
+                return JsonResponse({"erro": "Pergunta vazia"}, status=400)
+
+            # resposta pode ser dict (com 'resposta' e 'fontes') ou string
+            resposta = answer_question(pergunta)
+
+            if isinstance(resposta, dict):
+                return JsonResponse({
+                    "pergunta": pergunta,
+                    "resposta": resposta.get("resposta", ""),
+                    "fontes": resposta.get("fontes", [])
+                })
+            else:
+                return JsonResponse({
+                    "pergunta": pergunta,
+                    "resposta": str(resposta),
+                    "fontes": []
+                })
+
+        except Exception as e:
+            return JsonResponse({"erro": str(e)}, status=400)
+
+    return JsonResponse({"erro": "Use POST (JSON) ou GET (?q=...)"}, status=400)
+
 
 def chat_interface(request):
     """
@@ -28,12 +49,6 @@ def chat_interface(request):
 
     Esta view controla a conversa entre o usuário e o chatbot, armazenando as mensagens na sessão.
     Suporta limpar a conversa e gerar respostas do bot para as perguntas do usuário.
-
-    Args:
-        request (HttpRequest): O objeto de requisição HTTP.
-
-    Returns:
-        HttpResponse: A interface de chat renderizada com a conversa atual e o estado de "pensando".
     """
     if "messages" not in request.session:
         request.session["messages"] = []
@@ -56,7 +71,12 @@ def chat_interface(request):
 
                 # gera resposta do bot
                 resposta = answer_question(pergunta)
-                messages.append({"sender": "bot", "text": resposta})
+                messages.append({"sender": "bot", "text": str(resposta)})
                 request.session["messages"] = messages
 
-    return render(request, "chatbot/chat.html", {"messages": messages, "thinking": thinking})
+    return render(
+        request,
+        "chatbot/chat.html",
+        {"messages": messages, "thinking": thinking}
+    )
+
