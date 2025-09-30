@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pergunta que Respondo – Homepage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Material Symbols Rounded -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --surface: #fff;
+      --surface-2: #fafafa;
+      --text: #000;
+      --border: #ddd;
+      --primary: #0083f9;
+      --secondary: #e8e9eb;
+      --secondary-text: #000;
+    }
+    body.dark {
+      --bg: #1d1d20;
+      --surface: #2e2e32;
+      --surface-2: #2e2e32;
+      --text: #f2f2f7;
+      --border: rgba(255,255,255,0.1);
+      --primary: #0083f9;
+      --secondary: #3f3f3f;
+      --secondary-text: #fff;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      height: 100vh;
+      overflow: hidden;
+      color: var(--text);
+    }
+    /* Chat de fundo */
+    #chat-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      height: 90vh;
+      pointer-events: none; /* bloqueia interação */
+      opacity: 0.4;         /* efeito “desativado” */
+    }
+
+    /* Modal fixo */
+    #modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #modal {
+      background: #fafafb;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 20px;
+      width: 360px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      animation: fadeInScale 0.3s ease;
+      text-align: center;
+    }
+    body.dark #modal {
+      background: #2f2f2f;
+      color: #f2f2f7;
+    }
+    @keyframes fadeInScale {
+      from { opacity:0; transform:scale(.95);}
+      to   { opacity:1; transform:scale(1);}
+    }
+
+    .about-logo { width: 110px; height: 110px; margin-bottom: 8px; }
+    #modal h3 { margin: 10px 0 8px; font-size: 1.4rem; }
+    #modal p.desc {
+      font-size: .9rem;
+      margin: 6px 0 18px;
+      color: gray;
+    }
+
+    .modal-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-links a {
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .modal-links a:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+    .modal-links a span {
+      margin-left: 6px;
+      font-size: 18px;
+    }
+
+    #modal-footer {
+      font-size: 0.8rem;
+      color: gray;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Chat desativado de fundo -->
+  <div id="chat-container">
+    <h2>Pergunta que Respondo</h2>
+    <div id="messages">
+      <p style="text-align:center; margin-top:40%;">Chat bloqueado nesta tela inicial.</p>
+    </div>
+  </div>
+
+  <!-- Modal fixo -->
+  <div id="modal-overlay">
+    <div id="modal">
+      <img src="https://raw.githubusercontent.com/jobsrobson/Public-Databases/refs/heads/main/pqr.svg" alt="Logo Pergunta que Respondo" class="about-logo">
+      <h3>Pergunta que Respondo</h3>
+      <p class="desc">Selecione uma das opções abaixo para continuar</p>
+      <div class="modal-links">
+        <a href="/chat/">Acessar Chatbot <span class="material-symbols-rounded">chat</span></a>
+        <a href="/update_news/">Atualizar Base de Conhecimento <span class="material-symbols-rounded">refresh</span></a>
+      </div>
+      <div id="modal-footer">Gustavo, Felipe, Robson e Victor – 2025</div>
+    </div>
+  </div>
+</body>
+</html>
