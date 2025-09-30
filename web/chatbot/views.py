@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .rag_engine import answer_question
 from django.shortcuts import render
+from crawler import crawler_exec
 
 @csrf_exempt
 def ask(request):
@@ -80,3 +81,21 @@ def chat_interface(request):
         {"messages": messages, "thinking": thinking}
     )
 
+def update_news(request):
+    try:
+        test_mode = request.GET.get("teste") == "1"
+        query = "notícias recentes sobre educação na Região Integrada de Desenvolvimento do Distrito Federal e Entorno (RIDE-DF)"
+        artigos = crawler_exec.executar_coleta(query, test_mode=test_mode)
+
+        return JsonResponse({
+            "status": "sucesso",
+            "modo_teste": test_mode,
+            "qtde_artigos": len(artigos),
+            "artigos": artigos if test_mode else [a["titulo"] for a in artigos],
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "status": "erro",
+            "mensagem": str(e)
+        })

@@ -51,3 +51,11 @@ BAIXAR A IMAGEM A PARTIR DO DOCKERHUB
 $ docker pull jobsrobson/pergunta-que-respondo:cpu
 
 ============================================================================
+
+RODAR O CRAWLER (EM MODO TESTE - NÃO SALVA JSONs E NÃO ATUALIZA O FAISS)
+http://localhost:8000/update_news/?teste=1
+
+RODAR O CRAWLER (MODO NORMAL - SALVA JSONs E ATUALIZA O FAISS)
+http://localhost:8000/update_news/
+
+============================================================================

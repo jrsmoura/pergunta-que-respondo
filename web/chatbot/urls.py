@@ -13,10 +13,11 @@ Importações:
     - chat_interface: View que renderiza a interface web do chatbot.
 """
 from django.urls import path
-
-from .views import ask, chat_interface
+from . import views
+from .views import ask, chat_interface, update_news
 
 urlpatterns = [
     path("ask/", ask, name="ask"),     # API JSON em /ask/
     path("", chat_interface, name="chat"),  # interface web direto na raiz
+    path("update_news/", update_news, name="update_news"),  # endpoint para atualizar notícias
 ]
