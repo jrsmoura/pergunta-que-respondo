@@ -99,3 +99,11 @@ def update_news(request):
             "status": "erro",
             "mensagem": str(e)
         })
+    
+
+def homepage(request):
+    """
+    Renderiza a homepage inicial do Pergunta que Respondo.
+    Traz um modal fixo com links para acessar o chatbot e atualizar a base de conhecimento.
+    """
+    return render(request, "chatbot/homepage.html")

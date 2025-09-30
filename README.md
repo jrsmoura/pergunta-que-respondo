@@ -123,7 +123,7 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
       poetry run python web/manage.py runserver
       ```
 
-5. **Construir e Iniciar o Container:** O Docker Compose irá construir as imagens e iniciar os serviços definidos no arquivo `Dockerfile`.
+5. **Construir e Iniciar o Container:** O Docker irá construir as imagens e iniciar os serviços definidos no arquivo `Dockerfile`.
 
    ```
    docker build -t pergunta-que-respondo:cpu .
@@ -135,7 +135,29 @@ Para configurar o ambiente de desenvolvimento local, siga os passos abaixo.
    docker run -p 8000:8000 pergunta-que-respondo:cpu
    ```
 
-   
+6. **Acessar a Aplicação:** Abra o navegador e acesse `http://localhost:8000` para interagir com o chatbot.
+
+7. **Testar o Crawler via Endpoint:** Você pode atualizar manualmente a base de conhecimento executando o crawler através do endpoint `/update_news/`. Para rodar em modo de teste (sem salvar os JSONs e sem atualizar o FAISS), acesse:
+
+   Para executar em modo normal, salvando os dados e atualizando o FAISS, acesse:
+
+   ```
+   http://localhost:8000/update_news/
+   ```
+
+   Para executar o crawler em modo teste, sem salvar os JSONs e sem atualizar o FAISS:
+
+   ```
+   http://localhost:8000/update_news/?teste=1
+   ```
+
+## Baixe a imagem Docker
+
+Você pode baixar a imagem Docker pronta do projeto diretamente do Docker Hub:
+
+```
+docker pull jobsrobson/pergunta-que-respondo:cpu
+```
 
 ## Cronograma
 

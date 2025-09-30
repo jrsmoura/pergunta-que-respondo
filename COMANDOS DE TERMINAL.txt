@@ -50,6 +50,8 @@ $ docker push jobsrobson/pergunta-que-respondo:cpu
 BAIXAR A IMAGEM A PARTIR DO DOCKERHUB
 $ docker pull jobsrobson/pergunta-que-respondo:cpu
 
+https://hub.docker.com/repository/docker/jobsrobson/pergunta-que-respondo
+
 ============================================================================
 
 RODAR O CRAWLER (EM MODO TESTE - NÃO SALVA JSONs E NÃO ATUALIZA O FAISS)
